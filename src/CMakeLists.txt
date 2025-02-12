@@ -38,12 +38,12 @@ add_custom_command(
                 ${CMAKE_SOURCE_DIR}/assets/Cats.bmp
                 ${CMAKE_CURRENT_BINARY_DIR}/Debug/assets/Cats.bmp)
 
+file(COPY shaders/ DESTINATION Debug/shaders/)
+
 add_custom_command(
         TARGET main POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
                 ${CMAKE_SOURCE_DIR}/shaders/
                 ${CMAKE_CURRENT_BINARY_DIR}/Debug/shaders/)
-
-file(COPY shaders/ DESTINATION Debug/shaders/)
 
 target_link_libraries(main PRIVATE GLEW::glew_s glfw)

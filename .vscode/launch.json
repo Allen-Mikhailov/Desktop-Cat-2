@@ -16,6 +16,7 @@
             "preLaunchTask": "Build with CMake"
         },
         {
+            "cwd": "${workspaceFolder}\\build\\subprojects\\Build\\glfw_opengl_cmake_template_core\\Debug",
             "name": "(msvc) Launch",
             "type": "cppvsdbg",
             "request": "launch",
