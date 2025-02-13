@@ -17,10 +17,10 @@ unsigned int shaderProgram{};
 
 GLuint loadTexture(const char* filename) {
     int width, height, channels;
-    unsigned char* data = stbi_load(filename, &width, &height, &channels, 4); // Force 4 channels (RGBA)
+    unsigned char* data = stbi_load(filename, &width, &height, &channels, 0); // Force 4 channels (RGBA)
     
     if (!data) {
-        // std::cerr << "Failed to load texture: " << filename << std::endl;
+        std::cerr << "Failed to load texture: " << filename << std::endl;
         return 0;
     }
 
@@ -28,7 +28,7 @@ GLuint loadTexture(const char* filename) {
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
     
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
     
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -96,18 +96,15 @@ int main(int argc, char * argv[])
 
     Shader shader("shaders/vertex.vert", "shaders/fragment.frag");
 
-    
-    
-
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
     // add a new set of vertices to form a second triangle (a total of 6 vertices); the vertex attribute configuration remains the same (still one 3-float position vector per vertex)
     float vertices[] = {
         // positions          // colors           // texture coords
-         0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
-         0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
-        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
+         1.0f,  1.0f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
+         1.0f, -1.0f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
+        -1.0f, -1.0f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
+        -1.0f,  1.0f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
     };
     unsigned int indices[] = {
         0, 1, 3, // first triangle
@@ -139,7 +136,7 @@ int main(int argc, char * argv[])
 
     // load and create a texture 
     // -------------------------
-    unsigned int texture1, texture2;
+    unsigned int texture1;
     // texture 1
     // ---------
     glGenTextures(1, &texture1);
@@ -148,8 +145,8 @@ int main(int argc, char * argv[])
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     // set texture filtering parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     // load image, create texture and generate mipmaps
     int width, height, nrChannels;
     stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
@@ -167,7 +164,16 @@ int main(int argc, char * argv[])
     stbi_image_free(data);
 
     shader.use();
-    shader.setInt("texture1", texture1);
+    shader.setInt("texture1", 0);
+    // glUniform1i(glGetUniformLocation(shader.ID, "texture1"), 0);
+    shader.setInt("SpriteSheetSizeX", 1024);
+    shader.setInt("SpriteSheetSizeY", 544);
+
+    shader.setInt("SpriteSizeX", 32);
+    shader.setInt("SpriteSizeY", 32);
+    shader.setInt("SpriteX", 0);
+    shader.setInt("SpriteY", 2);
+    
 
     glfwSetFramebufferSizeCallback(window, framebufferSizeChanged);
 

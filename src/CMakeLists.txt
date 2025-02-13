@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.6 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.31)
 
 project(glfw_opengl_cmake_template_core LANGUAGES CXX)
 
